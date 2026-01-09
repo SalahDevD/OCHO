@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="products.html" class="nav-item">
+                    <span>📦</span> Produits
+                </a>
+                <a href="clients.html" class="nav-item active">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Gestion des Clients</h2>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Nouveau Client</button>
+            </header>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un client..." onkeyup="filterClients()">
+            </div>
+
+            <!-- Table Clients -->
+            <div class="table-container">
+                <table id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Ville</th>
+                            <th>Commandes</th>
+                            <th>Total Achats</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsBody">
+                        <tr>
+                            <td colspan="8">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Ajout/Modification -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouveau Client</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nom">Nom *</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Téléphone *</label>
+                        <input type="tel" id="telephone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ville">Ville</label>
+                        <input type="text" id="ville">
+                    </div>
+                    <div class="form-group">
+                        <label for="code_postal">Code Postal</label>
+                        <input type="text" id="code_postal">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="adresse">Adresse</label>
+                    <textarea id="adresse" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/clients.js"></script>
+</body>
+
+</html>

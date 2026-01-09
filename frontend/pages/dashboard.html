@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="products.html" class="nav-item">
+                    <span>📦</span> Produits
+                </a>
+                <a href="clients.html" class="nav-item">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Tableau de Bord</h2>
+                <div class="user-info">
+                    <span id="userName"></span>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="totalProduits">-</h3>
+                        <p>Produits</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3 id="totalClients">-</h3>
+                        <p>Clients</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="stockTotal">-</h3>
+                        <p>Articles en stock</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="valeurStock">-</h3>
+                        <p>Valeur du stock</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertes -->
+            <div class="section" id="alertesSection" style="display: none;">
+                <h3>⚠️ Alertes Stock</h3>
+                <div id="alertesList" class="alertes-list"></div>
+            </div>
+
+            <!-- Commandes récentes -->
+            <div class="section">
+                <h3>Commandes Récentes</h3>
+                <div class="table-container">
+                    <table id="commandesTable">
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Client</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commandesBody">
+                            <tr>
+                                <td colspan="5">Chargement...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+
+</html>

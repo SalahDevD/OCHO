@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="products.html" class="nav-item active">
+                    <span>📦</span> Produits
+                </a>
+                <a href="clients.html" class="nav-item">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Gestion des Produits</h2>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Nouveau Produit</button>
+            </header>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit..."
+                    onkeyup="filterProducts()">
+                <select id="categorieFilter" onchange="filterProducts()">
+                    <option value="">Toutes les catégories</option>
+                </select>
+                <select id="genreFilter" onchange="filterProducts()">
+                    <option value="">Tous les genres</option>
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                    <option value="Enfant">Enfant</option>
+                    <option value="Unisexe">Unisexe</option>
+                </select>
+            </div>
+
+            <!-- Table Produits -->
+            <div class="table-container">
+                <table id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Nom</th>
+                            <th>Catégorie</th>
+                            <th>Genre</th>
+                            <th>Prix Vente</th>
+                            <th>Stock Total</th>
+                            <th>Variantes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody">
+                        <tr>
+                            <td colspan="8">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Ajout/Modification -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouveau Produit</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="reference">Référence *</label>
+                        <input type="text" id="reference" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nom *</label>
+                        <input type="text" id="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categorie_id">Catégorie *</label>
+                        <select id="categorie_id" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="genre">Genre *</label>
+                        <select id="genre" required>
+                            <option value="">Sélectionner</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Enfant">Enfant</option>
+                            <option value="Unisexe">Unisexe</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="saison">Saison</label>
+                        <select id="saison">
+                            <option value="Toute saison">Toute saison</option>
+                            <option value="Été">Été</option>
+                            <option value="Hiver">Hiver</option>
+                            <option value="Printemps">Printemps</option>
+                            <option value="Automne">Automne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix_achat">Prix Achat (MAD) *</label>
+                        <input type="number" id="prix_achat" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix_vente">Prix Vente (MAD) *</label>
+                        <input type="number" id="prix_vente" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seuil_min">Seuil Minimum</label>
+                        <input type="number" id="seuil_min" value="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Détails -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détails du Produit</h3>
+                <span class="close" onclick="closeDetailsModal()">&times;</span>
+            </div>
+            <div id="productDetails"></div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/products.js"></script>
+</body>
+
+</html>

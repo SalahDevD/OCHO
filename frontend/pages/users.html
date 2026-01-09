@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Utilisateurs - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="products.html" class="nav-item">
+                    <span>📦</span> Produits
+                </a>
+                <a href="clients.html" class="nav-item">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item active" id="usersLink">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Gestion des Utilisateurs</h2>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Nouvel Utilisateur</button>
+            </header>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un utilisateur..." onkeyup="filterUsers()">
+                <select id="roleFilter" onchange="filterUsers()">
+                    <option value="">Tous les rôles</option>
+                    <option value="Administrateur">Administrateur</option>
+                    <option value="Magasinier">Magasinier</option>
+                    <option value="Vendeur">Vendeur</option>
+                </select>
+            </div>
+
+            <!-- Table Utilisateurs -->
+            <div class="table-container">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Date création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody">
+                        <tr><td colspan="6">Chargement...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Ajout/Modification -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouvel Utilisateur</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="role_id">Rôle *</label>
+                    <select id="role_id" required>
+                        <option value="">Sélectionner un rôle</option>
+                        <option value="1">Administrateur</option>
+                        <option value="2">Magasinier</option>
+                        <option value="3">Vendeur</option>
+                    </select>
+                </div>
+                <div class="form-group" id="passwordGroup">
+                    <label for="mot_de_passe">Mot de passe *</label>
+                    <input type="password" id="mot_de_passe" minlength="6">
+                    <small>Minimum 6 caractères</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/users.js"></script>
+</body>
+</html>
