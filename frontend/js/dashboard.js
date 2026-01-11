@@ -8,11 +8,8 @@ const user = getUser();
 document.getElementById('userName').textContent = user.nom;
 document.getElementById('userRole').textContent = user.role;
 
-// Afficher le lien Utilisateurs seulement pour les admins
-if (user.role === 'Administrateur') {
-    const usersLink = document.getElementById('usersLink');
-    if (usersLink) usersLink.style.display = 'flex';
-}
+// Load navigation based on role
+loadNavigation(user.role);
 
 // Charger les statistiques
 async function loadDashboard() {

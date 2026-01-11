@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+
+        #avatarInput {
+            display: none;
+        }
+
+        .profile-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .profile-header p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .profile-card h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #d32f2f;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 30px 0 20px 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item" id="dashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="profile.html" class="nav-item active" id="profileLink">
+                    <span>👤</span> Mon Profil
+                </a>
+                <a href="products.html" class="nav-item" id="productsLink" style="display: none;">
+                    <span>📦</span> Produits
+                </a>
+                <a href="seller-dashboard.html" class="nav-item" id="sellerDashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="seller-products.html" class="nav-item" id="sellerProductsLink" style="display: none;">
+                    <span>📦</span> Mes Produits
+                </a>
+                <a href="client-shop.html" class="nav-item" id="shopLink" style="display: none;">
+                    <span>🛍️</span> Boutique
+                </a>
+                <a href="clients.html" class="nav-item" id="clientsLink" style="display: none;">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item" id="commandesLink">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Mon Profil</h2>
+                <div class="user-info">
+                    <span id="userName"></span>
+                </div>
+            </header>
+
+            <div class="profile-container">
+                <!-- Alert Messages -->
+                <div id="successAlert" class="alert alert-success"></div>
+                <div id="errorAlert" class="alert alert-error"></div>
+
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div style="position: relative; width: 120px; margin: 0 auto 15px;">
+                        <div class="profile-avatar" id="profileAvatar">👤</div>
+                        <button type="button" id="uploadAvatarBtn" class="btn btn-small" style="position: absolute; bottom: 0; right: 0; padding: 8px 12px; background: #4CAF50; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: none;">
+                            📷
+                        </button>
+                    </div>
+                    <input type="file" id="avatarInput" accept="image/*">
+                    <h2 id="profileName"></h2>
+                    <p id="profileRole"></p>
+                    <p id="profileEmail"></p>
+                    
+                    <!-- Profile Management Buttons -->
+                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <!-- Case 1: No profile exists - Show "Add Profile" and "Save" -->
+                        <div id="noProfileButtons" style="display: none; width: 100%; gap: 10px; flex-direction: column;">
+                            <button type="button" class="btn btn-success" onclick="initNewProfile()" style="width: 100%;">
+                                ➕ Ajouter un Profil
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="saveProfileChanges()" style="width: 100%;">
+                                💾 Enregistrer
+                            </button>
+                        </div>
+                        
+                        <!-- Case 2: Profile exists - Show "Edit", "Save", "Cancel" -->
+                        <div id="existingProfileButtons" style="display: flex; gap: 10px; width: 100%;">
+                            <button type="button" class="btn btn-primary" id="editProfileBtn" onclick="toggleEditMode()" style="flex: 1;">
+                                ✏️ Modifier
+                            </button>
+                            <button type="button" class="btn btn-success" id="saveProfileBtn" onclick="saveProfileChanges()" style="flex: 1; display: none;">
+                                💾 Enregistrer
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelProfileBtn" onclick="cancelProfileEdit()" style="flex: 1; display: none;">
+                                ❌ Annuler
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+
+                    <!-- Personal Information -->
+                    <div class="profile-card">
+                        <h3>📋 Informations Personnelles</h3>
+                        <div class="form-group">
+                            <label>Nom Complet</label>
+                            <input type="text" id="fullName" placeholder="Votre nom complet">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" placeholder="votre@email.com" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Rôle</label>
+                            <input type="text" id="role" placeholder="Votre rôle" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Date d'inscription</label>
+                            <input type="text" id="joinDate" placeholder="Date d'inscription" disabled>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="editProfile()">✏️ Modifier</button>
+                            <button class="btn btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">Annuler</button>
+                        </div>
+                    </div>
+
+                    <!-- Bio Section -->
+                    <div class="profile-card">
+                        <h3>✍️ Biographie</h3>
+                        <div class="form-group">
+                            <label>À propos de vous</label>
+                            <textarea id="bio" placeholder="Parlez-nous de vous..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; resize: vertical; min-height: 100px; font-family: inherit;"></textarea>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="editBioBtn" onclick="editBio()" style="width: 100%;">✏️ Modifier</button>
+                            <button class="btn btn-success" id="saveBioBtn" onclick="saveBio()" style="width: 100%; display: none;">💾 Enregistrer</button>
+                            <button class="btn btn-secondary" id="cancelBioBtn" onclick="cancelBioEdit()" style="width: 100%; display: none;">❌ Annuler</button>
+                        </div>
+                    </div>
+
+                    <!-- Account Settings -->
+                    <div class="profile-card">
+                        <h3>🔒 Paramètres du Compte</h3>
+                        <div id="accountInfo"></div>
+                        <button class="btn btn-primary" onclick="showChangePasswordForm()" style="width: 100%; margin-top: 20px;">
+                            🔑 Changer le Mot de Passe
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Change Password Form (Hidden by default) -->
+                <div id="changePasswordForm" style="display: none;" class="profile-card">
+                    <h3>🔑 Changer le Mot de Passe</h3>
+                    <div class="form-group">
+                        <label>Mot de passe actuel</label>
+                        <input type="password" id="currentPassword" placeholder="Votre mot de passe actuel">
+                    </div>
+                    <div class="form-group">
+                        <label>Nouveau mot de passe</label>
+                        <input type="password" id="newPassword" placeholder="Nouveau mot de passe">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmer le nouveau mot de passe</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirmez le mot de passe">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="updatePassword()">Mettre à jour</button>
+                        <button class="btn btn-secondary" onclick="hideChangePasswordForm()">Annuler</button>
+                    </div>
+                </div>
+
+                <!-- User Statistics -->
+                <div class="section-title" id="statsSection" style="display: none;">📊 Vos Statistiques</div>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/profile.js"></script>
+</body>
+
+</html>

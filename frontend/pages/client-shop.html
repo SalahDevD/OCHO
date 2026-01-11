@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .shop-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .products-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .product-image span {
+            font-size: 80px;
+            z-index: 1;
+        }
+
+        .product-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .product-reference {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .product-stock {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .product-stock.low {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            padding: 8px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-add-cart:hover {
+            background: #5568d3;
+        }
+
+        .btn-add-cart:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-details {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-details:hover {
+            background: #e8e8e8;
+        }
+
+        .cart-sidebar {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: #999;
+            padding: 20px 0;
+        }
+
+        .cart-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-item {
+            background: #f5f5f5;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cart-item-qty {
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .cart-item-price {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-remove {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .cart-item-remove:hover {
+            background: #ff1744;
+        }
+
+        .cart-summary {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-checkout:hover {
+            background: #45a049;
+        }
+
+        .btn-checkout:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 80px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .product-detail-info {
+            margin-bottom: 20px;
+        }
+
+        .product-detail-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .product-detail-ref {
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .product-detail-price {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-detail-stock {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .product-detail-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .variants-section {
+            margin-bottom: 20px;
+        }
+
+        .variants-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .variant-select {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .variant-option {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .variant-option:hover {
+            border-color: #667eea;
+        }
+
+        .variant-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail-qty-input {
+            width: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .btn-add-detail {
+            flex: 1;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-add-detail:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 1200px) {
+            .shop-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: relative;
+                top: auto;
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-section {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole"></p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item" id="dashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="profile.html" class="nav-item" id="profileLink">
+                    <span>👤</span> Mon Profil
+                </a>
+                <a href="products.html" class="nav-item" id="productsLink" style="display: none;">
+                    <span>📦</span> Produits
+                </a>
+                <a href="seller-dashboard.html" class="nav-item" id="sellerDashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="client-shop.html" class="nav-item active" id="shopLink">
+                    <span>🛍️</span> Boutique
+                </a>
+                <a href="seller-products.html" class="nav-item" id="sellerProductsLink" style="display: none;">
+                    <span>📦</span> Mes Produits
+                </a>
+                <a href="clients.html" class="nav-item" id="clientsLink" style="display: none;">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item" id="commandesLink">
+                    <span>🛒</span> Mes Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Boutique OCHO</h2>
+                <div class="user-info">
+                    <span id="userName"></span>
+                </div>
+            </header>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit..."
+                    onkeyup="filterProducts()" style="flex: 1; min-width: 200px;">
+                <select id="categorieFilter" onchange="filterProducts()">
+                    <option value="">Toutes les catégories</option>
+                </select>
+                <select id="genreFilter" onchange="filterProducts()">
+                    <option value="">Tous les genres</option>
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                    <option value="Enfant">Enfant</option>
+                    <option value="Unisexe">Unisexe</option>
+                </select>
+            </div>
+
+            <!-- Shop Layout -->
+            <div class="shop-container">
+                <!-- Products Grid -->
+                <div class="products-section" id="productsGrid">
+                    <div class="product-card" style="grid-column: 1/-1;">
+                        <div style="text-align: center; padding: 40px; color: #999;">
+                            Chargement des produits...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Sidebar -->
+                <div class="cart-sidebar">
+                    <div class="cart-title">🛒 Panier</div>
+                    <div class="cart-items" id="cartItems">
+                        <div class="cart-empty">Panier vide</div>
+                    </div>
+                    <div class="cart-summary">
+                        <div class="cart-total-row">
+                            <span>Sous-total:</span>
+                            <span id="cartSubtotal">0 DH</span>
+                        </div>
+                        <div class="cart-total">
+                            <span>Total</span>
+                            <span id="cartTotal">0 DH</span>
+                        </div>
+                        <button class="btn-checkout" id="checkoutBtn" onclick="openClientModal()" disabled>
+                            Passer la commande
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal Sélection Client -->
+        <div id="clientModal" class="modal" style="display: none; z-index: 1000;">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>Sélectionner un Client</h3>
+                    <button class="close" onclick="closeClientModal()">&times;</button>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 20px;">
+                        <label for="clientSelect" style="display: block; margin-bottom: 10px; font-weight: bold;">Client *</label>
+                        <select id="clientSelect" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Sélectionnez un client</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="btn" style="background: #ccc;" onclick="closeClientModal()">Annuler</button>
+                        <button class="btn" onclick="proceedCheckout()">Confirmer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 id="detailName">Détails du produit</h2>
+                <button class="modal-close" onclick="closeDetailModal()">✕</button>
+            </div>
+            <div id="detailContent">
+                <div class="product-detail-image" id="detailImage">👕</div>
+                <div class="product-detail-info">
+                    <div class="product-detail-ref" id="detailRef"></div>
+                    <div class="product-detail-price" id="detailPrice"></div>
+                    <div class="product-detail-stock" id="detailStock"></div>
+                    <div class="product-detail-desc" id="detailDesc"></div>
+                </div>
+                <div class="variants-section" id="variantsSection" style="display: none;">
+                    <div class="variants-title">Sélectionnez les options</div>
+                    <div class="variants-list" id="variantsList"></div>
+                </div>
+                <div class="detail-actions">
+                    <input type="number" id="detailQty" class="detail-qty-input" value="1" min="1">
+                    <button class="btn-add-detail" onclick="addFromDetail()">Ajouter au panier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/client-shop.js"></script>
+</body>
+
+</html>

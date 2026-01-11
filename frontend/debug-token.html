@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déboguer Token JWT</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+        }
+        .status-box {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #fef5f5;
+        }
+        .warning {
+            border-left-color: #ff9800;
+            background: #fff8f3;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .token-preview {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 11px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Déboguer Token JWT</h1>
+        <p>Cet outil vous aide à diagnostiquer les problèmes d'authentification JWT.</p>
+
+        <h2>📊 État du Stockage Local</h2>
+        <div class="button-group">
+            <button onclick="checkLocalStorage()">Vérifier LocalStorage</button>
+            <button onclick="clearAllStorage()">Effacer Tout</button>
+            <button onclick="testLogin()">Tester Connexion</button>
+            <button onclick="testTokenVerification()">Vérifier Token</button>
+        </div>
+
+        <div id="storageStatus"></div>
+
+        <h2>🧪 Tests API</h2>
+        <div id="testResults"></div>
+
+        <h2>🔍 Détails Token JWT</h2>
+        <div id="tokenDetails"></div>
+
+        <h2>📝 Logs</h2>
+        <div id="logs" class="status-box" style="min-height: 100px; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const logsContainer = document.getElementById('logs');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = {
+                info: '#2196F3',
+                success: '#4CAF50',
+                error: '#F44336',
+                warning: '#FF9800'
+            }[type] || '#2196F3';
+            
+            const logEntry = `[${timestamp}] ${message}`;
+            console.log(logEntry);
+            
+            logsContainer.innerHTML += `<span style="color: ${color}">✓ ${logEntry}</span>\n`;
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        function checkLocalStorage() {
+            const results = document.getElementById('storageStatus');
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            let html = '<h3>LocalStorage Contents:</h3>';
+            
+            if (!token) {
+                html += '<div class="status-box error">❌ Token: NON TROUVÉ</div>';
+                log('❌ Token not found in localStorage', 'error');
+            } else {
+                html += `<div class="status-box success">✅ Token présent (${token.length} caractères)</div>`;
+                html += '<div class="token-preview">' + token + '</div>';
+                log('✅ Token found in localStorage', 'success');
+                
+                // Décoder le token
+                try {
+                    const parts = token.split('.');
+                    if (parts.length === 3) {
+                        const decoded = JSON.parse(atob(parts[1]));
+                        html += '<h4>🔓 Contenu du Token (décodé):</h4>';
+                        html += '<table>';
+                        html += '<tr><th>Propriété</th><th>Valeur</th></tr>';
+                        for (let key in decoded) {
+                            const value = decoded[key];
+                            const expDate = key === 'exp' ? ` (${new Date(value * 1000).toLocaleString()})` : '';
+                            html += `<tr><td>${key}</td><td>${value}${expDate}</td></tr>`;
+                        }
+                        html += '</table>';
+                        log('✅ Token decoded successfully', 'success');
+                    }
+                } catch (e) {
+                    html += '<div class="status-box error">❌ Erreur décodage token: ' + e.message + '</div>';
+                    log('❌ Failed to decode token: ' + e.message, 'error');
+                }
+            }
+
+            if (!user) {
+                html += '<div class="status-box warning">⚠️ User Info: NON TROUVÉE</div>';
+                log('⚠️ User info not found in localStorage', 'warning');
+            } else {
+                try {
+                    const userData = JSON.parse(user);
+                    html += '<div class="status-box success">✅ User Info présente</div>';
+                    html += '<table>';
+                    html += '<tr><th>Propriété</th><th>Valeur</th></tr>';
+                    for (let key in userData) {
+                        html += `<tr><td>${key}</td><td>${userData[key]}</td></tr>`;
+                    }
+                    html += '</table>';
+                    log('✅ User info found and valid', 'success');
+                } catch (e) {
+                    html += '<div class="status-box error">❌ Erreur parsing user: ' + e.message + '</div>';
+                    log('❌ Failed to parse user info: ' + e.message, 'error');
+                }
+            }
+
+            results.innerHTML = html;
+        }
+
+        function clearAllStorage() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            log('✅ LocalStorage effacé', 'success');
+            checkLocalStorage();
+        }
+
+        async function testLogin() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<p>Test en cours...</p>';
+            log('🔄 Tentative de connexion...', 'info');
+
+            try {
+                // Test avec des données de démo
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@ocho.com',
+                        password: 'admin123'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    log('✅ Connexion réussie!', 'success');
+                    // Sauvegarder le token
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    results.innerHTML = '<div class="status-box success">✅ Connexion réussie!<br>Token sauvegardé.</div>';
+                    checkLocalStorage();
+                } else {
+                    log('❌ Connexion échouée: ' + data.message, 'error');
+                    results.innerHTML = '<div class="status-box error">❌ Connexion échouée: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                log('❌ Erreur: ' + error.message, 'error');
+                results.innerHTML = '<div class="status-box error">❌ Erreur: ' + error.message + '</div>';
+            }
+        }
+
+        async function testTokenVerification() {
+            const results = document.getElementById('testResults');
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                results.innerHTML = '<div class="status-box error">❌ Aucun token trouvé. Connectez-vous d\'abord.</div>';
+                log('❌ No token found for verification', 'error');
+                return;
+            }
+
+            results.innerHTML = '<p>Test en cours...</p>';
+            log('🔄 Vérification du token...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/verify', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Token valide!', 'success');
+                    results.innerHTML = `<div class="status-box success">✅ Token Valide!<br><br>Utilisateur: ${JSON.stringify(data.user, null, 2)}</div>`;
+                } else {
+                    const error = await response.json();
+                    log('❌ Token invalide: ' + error.message, 'error');
+                    results.innerHTML = `<div class="status-box error">❌ Token invalide: ${error.message}</div>`;
+                }
+            } catch (error) {
+                log('❌ Erreur: ' + error.message, 'error');
+                results.innerHTML = '<div class="status-box error">❌ Erreur: ' + error.message + '</div>';
+            }
+        }
+
+        // Vérification initiale
+        window.addEventListener('load', () => {
+            log('🚀 Page de débogage chargée', 'info');
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html>

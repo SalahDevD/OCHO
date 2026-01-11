@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Commande - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .confirmation-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .success-message {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: popIn 0.5s ease;
+        }
+
+        .success-message h1 {
+            color: #4caf50;
+            font-size: 28px;
+            margin: 0 0 10px 0;
+        }
+
+        .success-message p {
+            color: #666;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .order-details {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-value {
+            color: #666;
+            text-align: right;
+        }
+
+        .order-items {
+            margin-top: 30px;
+        }
+
+        .order-items h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            flex: 1;
+        }
+
+        .item-qty {
+            width: 100px;
+            text-align: center;
+            color: #666;
+        }
+
+        .item-price {
+            width: 120px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .next-steps {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+
+        .next-steps h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .next-steps ol {
+            margin: 0;
+            color: #666;
+        }
+
+        .next-steps li {
+            margin: 10px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .payment-info {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .payment-info strong {
+            color: #2e7d32;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+
+            .item {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .item-qty,
+            .item-price {
+                width: auto;
+                text-align: left;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">OCHO</div>
+            <nav class="menu">
+                <a href="../index.html" class="menu-item">🏠 Accueil</a>
+                <a href="profile.html" class="menu-item" id="profileLink" style="display: none;">👤 Mon Profil</a>
+                <a href="dashboard.html" class="menu-item" id="dashboardLink" style="display: none;">📊 Dashboard</a>
+                <a href="seller-dashboard.html" class="menu-item" id="sellerDashboardLink" style="display: none;">📊 Dashboard</a>
+                <a href="products.html" class="menu-item" id="productsLink" style="display: none;">📦 Produits</a>
+                <a href="seller-products.html" class="menu-item" id="sellerProductsLink" style="display: none;">📦 Mes Produits</a>
+                <a href="client-shop.html" class="menu-item" id="shopLink" style="display: none;">🛍️ Boutique</a>
+                <a href="commandes.html" class="menu-item" id="commandesLink" style="display: none;">📋 Commandes</a>
+                <a href="clients.html" class="menu-item" id="clientsLink" style="display: none;">🤝 Clients</a>
+                <a href="users.html" class="menu-item" id="usersLink" style="display: none;">👥 Utilisateurs</a>
+                <a href="#" class="menu-item" onclick="logout(); return false;">🚪 Déconnexion</a>
+            </nav>
+        </aside>
+
+        <div class="main-content">
+            <div class="confirmation-container">
+                <div class="success-message">
+                    <div class="success-icon">✅</div>
+                    <h1>Commande Confirmée!</h1>
+                    <p>Merci pour votre achat. Votre commande a été reçue avec succès.</p>
+                </div>
+
+                <div class="order-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Numéro de Commande:</span>
+                        <span class="detail-value" id="orderNumber">-</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Date de Commande:</span>
+                        <span class="detail-value" id="orderDate">-</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Statut:</span>
+                        <span class="detail-value" style="color: #4caf50; font-weight: 600;">Confirmée ✓</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Adresse de Livraison:</span>
+                        <span class="detail-value" id="deliveryAddress" style="text-align: right; max-width: 300px;">-</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Méthode de Paiement:</span>
+                        <span class="detail-value" id="paymentMethod">-</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Montant Total:</span>
+                        <span class="detail-value" style="font-size: 18px; color: #667eea;">
+                            <strong id="totalAmount">-</strong>
+                        </span>
+                    </div>
+
+                    <div class="order-items">
+                        <h3>Articles Commandés:</h3>
+                        <div id="itemsList"></div>
+                    </div>
+                </div>
+
+                <div class="payment-info">
+                    <strong>💳 Votre paiement est en cours de traitement.</strong>
+                    <p style="margin: 10px 0 0 0; color: #2e7d32;">Une confirmation vous sera envoyée par email.</p>
+                </div>
+
+                <div class="next-steps">
+                    <h3>Prochaines étapes:</h3>
+                    <ol>
+                        <li><strong>Traitement du paiement:</strong> Nous vérifierons votre paiement (1-2 heures)</li>
+                        <li><strong>Préparation:</strong> Nous préparerons votre colis (2-3 jours)</li>
+                        <li><strong>Expédition:</strong> Votre colis sera expédié avec numéro de suivi</li>
+                        <li><strong>Livraison:</strong> Réception estimée en 3-7 jours ouvrables</li>
+                    </ol>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="commandes.html" class="btn btn-primary">📋 Voir mes commandes</a>
+                    <a href="client-shop.html" class="btn btn-secondary">🛍️ Continuer les achats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        // Vérifier l'authentification
+        if (!isAuthenticated()) {
+            window.location.href = '../index.html';
+        }
+
+        const user = getUser();
+        
+        // Load navigation based on role
+        loadNavigation(user.role);
+
+        // Récupérer les détails de paiement
+        function loadOrderDetails() {
+            const paymentInfo = JSON.parse(sessionStorage.getItem('last_payment') || '{}');
+            const cartData = JSON.parse(sessionStorage.getItem('checkout_cart') || '[]');
+
+            // Afficher les informations de commande
+            if (paymentInfo.orderId) {
+                document.getElementById('orderNumber').textContent = `#${paymentInfo.orderId}`;
+                document.getElementById('orderDate').textContent = new Date(paymentInfo.timestamp).toLocaleDateString('fr-MA');
+                document.getElementById('totalAmount').textContent = new Intl.NumberFormat('fr-MA', {
+                    style: 'currency',
+                    currency: 'MAD'
+                }).format(paymentInfo.amount);
+            }
+
+            // Afficher les articles
+            const itemsList = document.getElementById('itemsList');
+            if (cartData.length > 0) {
+                itemsList.innerHTML = cartData.map(item => `
+                    <div class="item">
+                        <span class="item-name">${item.nom}</span>
+                        <span class="item-qty">x${item.quantity}</span>
+                        <span class="item-price">${new Intl.NumberFormat('fr-MA', {
+                            style: 'currency',
+                            currency: 'MAD'
+                        }).format(item.prix_vente * item.quantity)}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Afficher la méthode de paiement
+            if (paymentInfo.method) {
+                const methodNames = {
+                    'card': '💳 Carte Bancaire',
+                    'paypal': '🅿️ PayPal',
+                    'bank': '🏦 Virement Bancaire',
+                    'installment': '📅 Paiement Échelonné (3x)'
+                };
+                document.getElementById('paymentMethod').textContent = methodNames[paymentInfo.method] || paymentInfo.method;
+            }
+
+            // Récupérer l'adresse de livraison depuis le formulaire
+            const deliveryAddr = sessionStorage.getItem('delivery_address');
+            if (deliveryAddr) {
+                const addr = JSON.parse(deliveryAddr);
+                document.getElementById('deliveryAddress').textContent = 
+                    `${addr.address}, ${addr.city} ${addr.zipcode}, ${addr.country}`;
+            }
+        }
+
+        // Charger les détails au démarrage
+        document.addEventListener('DOMContentLoaded', loadOrderDetails);
+    </script>
+</body>
+
+</html>

@@ -17,16 +17,28 @@
                 <p id="userRole"></p>
             </div>
             <nav class="nav">
-                <a href="dashboard.html" class="nav-item">
+                <a href="dashboard.html" class="nav-item" id="dashboardLink">
                     <span>📊</span> Dashboard
                 </a>
-                <a href="products.html" class="nav-item active">
+                <a href="profile.html" class="nav-item" id="profileLink">
+                    <span>👤</span> Mon Profil
+                </a>
+                <a href="products.html" class="nav-item active" id="productsLink" style="display: none;">
                     <span>📦</span> Produits
                 </a>
-                <a href="clients.html" class="nav-item">
+                <a href="seller-dashboard.html" class="nav-item" id="sellerDashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="seller-products.html" class="nav-item" id="sellerProductsLink" style="display: none;">
+                    <span>📦</span> Mes Produits
+                </a>
+                <a href="client-shop.html" class="nav-item" id="shopLink" style="display: none;">
+                    <span>🛍️</span> Boutique
+                </a>
+                <a href="clients.html" class="nav-item" id="clientsLink" style="display: none;">
                     <span>👥</span> Clients
                 </a>
-                <a href="commandes.html" class="nav-item">
+                <a href="commandes.html" class="nav-item" id="commandesLink">
                     <span>🛒</span> Commandes
                 </a>
                 <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
@@ -66,6 +78,7 @@
                 <table id="productsTable">
                     <thead>
                         <tr>
+                            <th>Image</th>
                             <th>Référence</th>
                             <th>Nom</th>
                             <th>Catégorie</th>
@@ -95,6 +108,15 @@
             </div>
             <form id="productForm">
                 <input type="hidden" id="productId">
+                
+                <!-- Section Image -->
+                <div class="form-group" style="text-align: center; padding: 20px; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px;">
+                    <label for="image_url" style="display: block; margin-bottom: 10px; font-weight: bold;">Image du Produit</label>
+                    <div id="currentImagePreview" style="font-size: 80px; margin-bottom: 15px;">👕</div>
+                    <input type="text" id="image_url" placeholder="Emoji ou URL d'image" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="button" class="btn btn-info" onclick="triggerImageInput()" style="display: inline-block;">🖼️ Choisir Emoji</button>
+                </div>
+                
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="reference">Référence *</label>
@@ -139,6 +161,10 @@
                     <div class="form-group">
                         <label for="seuil_min">Seuil Minimum</label>
                         <input type="number" id="seuil_min" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" value="0" min="0">
                     </div>
                 </div>
                 <div class="form-group">

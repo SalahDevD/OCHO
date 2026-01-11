@@ -61,6 +61,8 @@ body {
 
 .nav {
     padding: 20px 0;
+    list-style: none;
+    margin: 0;
 }
 
 .nav-item {

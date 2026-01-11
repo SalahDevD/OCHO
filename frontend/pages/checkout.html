@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - OCHO</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .checkout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .checkout-header h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+
+        .step.active .step-number {
+            background: #4caf50;
+        }
+
+        .step.completed .step-number {
+            background: #4caf50;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .checkout-section {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .checkout-section h2 {
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-option {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: #667eea;
+            background: #f9f9f9;
+        }
+
+        .payment-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .payment-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .payment-label {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .payment-description {
+            font-size: 12px;
+            color: #999;
+            margin-left: 30px;
+        }
+
+        .order-summary {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .security-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        .order-items {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-steps {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .step {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <div class="checkout-container">
+            <!-- Header -->
+            <div class="checkout-header">
+                <h1>Finaliser votre commande</h1>
+                <p>Veuillez compléter les informations ci-dessous</p>
+            </div>
+
+            <!-- Steps -->
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-label">Panier</div>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Adresse</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Paiement</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="checkout-content">
+                <!-- Form Section -->
+                <div>
+                    <!-- Delivery Address -->
+                    <div class="checkout-section">
+                        <h2>📍 Adresse de Livraison</h2>
+                        <form id="checkoutForm">
+                            <div class="form-group">
+                                <label for="fullName">Nom Complet *</label>
+                                <input type="text" id="fullName" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Téléphone *</label>
+                                    <input type="tel" id="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" id="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Adresse *</label>
+                                <input type="text" id="address" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">Ville *</label>
+                                    <input type="text" id="city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="zipcode">Code Postal *</label>
+                                    <input type="text" id="zipcode" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="country">Pays *</label>
+                                <select id="country" required>
+                                    <option value="">Sélectionnez...</option>
+                                    <option value="Maroc">Maroc</option>
+                                    <option value="France">France</option>
+                                    <option value="Belgique">Belgique</option>
+                                    <option value="Suisse">Suisse</option>
+                                    <option value="Canada">Canada</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="checkout-section">
+                        <h2>💳 Méthode de Paiement</h2>
+                        
+                        <div class="payment-methods">
+                            <div class="payment-option selected" onclick="selectPaymentMethod('card')">
+                                <label class="payment-label">
+                                    <input type="radio" name="paymentMethod" value="card" checked>
+                                    Carte Bancaire
+                                </label>
+                                <div class="payment-description">
+                                    Visa, Mastercard, American Express
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPaymentMethod('paypal')">
+                                <label class="payment-label">
+                                    <input type="radio" name="paymentMethod" value="paypal">
+                                    PayPal
+                                </label>
+                                <div class="payment-description">
+                                    Paiement sécurisé via votre compte PayPal
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPaymentMethod('bank_transfer')">
+                                <label class="payment-label">
+                                    <input type="radio" name="paymentMethod" value="bank_transfer">
+                                    Virement Bancaire
+                                </label>
+                                <div class="payment-description">
+                                    Effectuez un virement à notre compte bancaire
+                                </div>
+                            </div>
+
+                            <div class="payment-option" onclick="selectPaymentMethod('installment')">
+                                <label class="payment-label">
+                                    <input type="radio" name="paymentMethod" value="installment">
+                                    Paiement Échelonné (3x sans frais)
+                                </label>
+                                <div class="payment-description">
+                                    Divisez votre paiement en 3 versements
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Details (initially visible) -->
+                        <div id="cardPayment" class="payment-details">
+                            <div class="form-group">
+                                <label for="cardHolder">Titulaire de la Carte *</label>
+                                <input type="text" id="cardHolder" placeholder="Nom sur la carte">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardNumber">Numéro de Carte *</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Expiration (MM/YY) *</label>
+                                    <input type="text" id="expiryDate" placeholder="12/25" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV *</label>
+                                    <input type="text" id="cvv" placeholder="123" maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Payment Methods -->
+                        <div id="otherPayment" style="display: none;">
+                            <p style="color: #999; text-align: center; padding: 20px;">
+                                Les détails de paiement seront confirmés lors de la prochaine étape
+                            </p>
+                        </div>
+
+                        <div class="security-info">
+                            🔒 Vos données de paiement sont sécurisées et chiffrées
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <aside>
+                    <div class="checkout-section">
+                        <h2>📦 Résumé de la Commande</h2>
+                        
+                        <div class="order-items" id="orderItems">
+                            <!-- Dynamically filled -->
+                        </div>
+
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Sous-total:</span>
+                                <span id="subtotal">0 DH</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Livraison:</span>
+                                <span id="shipping">50 DH</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>TVA (20%):</span>
+                                <span id="tax">0 DH</span>
+                            </div>
+                            <div class="summary-total">
+                                <span>Total:</span>
+                                <span id="total">0 DH</span>
+                            </div>
+                        </div>
+
+                        <button class="btn" onclick="completeCheckout()">
+                            ✓ Confirmer la Commande
+                        </button>
+
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="client-shop.html" style="color: #667eea; text-decoration: none;">
+                                ← Continuer les achats
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/checkout.js"></script>
+</body>
+
+</html>

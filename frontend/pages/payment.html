@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de Paiement - OCHO</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .payment-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .payment-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+
+        .payment-methods h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .method:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .method input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .method-info {
+            flex: 1;
+        }
+
+        .method-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .method-desc {
+            color: #999;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .method-icon {
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        .card-form {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pay {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-pay:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-pay:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .security-info {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .security-info svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #c62828;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .info-message {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #1565c0;
+            font-size: 13px;
+        }
+
+        .info-message.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .payment-container {
+                padding: 20px;
+            }
+
+            .payment-header h1 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>💳 Paiement Sécurisé</h1>
+            <p>Complétez votre commande</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="info-message" id="infoMessage">
+            💡 Pour les tests: Utilisez 4111 1111 1111 1111 (Visa), CVV 123, Date: 12/25
+        </div>
+
+        <div class="order-summary">
+            <div class="summary-row">
+                <span>Numéro de commande:</span>
+                <span id="orderNumber">-</span>
+            </div>
+            <div class="summary-row">
+                <span>Nombre d'articles:</span>
+                <span id="itemCount">-</span>
+            </div>
+            <div class="summary-row">
+                <span>Sous-total:</span>
+                <span id="subtotal">0 DH</span>
+            </div>
+            <div class="summary-row">
+                <span>Frais de livraison:</span>
+                <span id="shipping">0 DH</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total à payer:</span>
+                <span id="totalAmount">0 DH</span>
+            </div>
+        </div>
+
+        <div class="payment-methods">
+            <h3>Méthode de paiement</h3>
+
+            <label class="method">
+                <input type="radio" name="paymentMethod" value="card" checked>
+                <div class="method-info">
+                    <div class="method-name">Carte Bancaire</div>
+                    <div class="method-desc">Visa, Mastercard, American Express</div>
+                </div>
+                <div class="method-icon">💳</div>
+            </label>
+
+            <label class="method">
+                <input type="radio" name="paymentMethod" value="wallet">
+                <div class="method-info">
+                    <div class="method-name">Portefeuille Mobile</div>
+                    <div class="method-desc">Maroc Telecom, Orange Money</div>
+                </div>
+                <div class="method-icon">📱</div>
+            </label>
+
+            <label class="method">
+                <input type="radio" name="paymentMethod" value="bank">
+                <div class="method-info">
+                    <div class="method-name">Virement Bancaire</div>
+                    <div class="method-desc">Traitement sous 24-48 heures</div>
+                </div>
+                <div class="method-icon">🏦</div>
+            </label>
+        </div>
+
+        <div class="card-form active" id="cardForm">
+            <h3 style="margin-bottom: 15px; color: #333;">Informations de la carte</h3>
+
+            <div class="form-group">
+                <label>Nom du titulaire de la carte</label>
+                <input type="text" id="cardholderName" placeholder="Jean Dupont" required>
+            </div>
+
+            <div class="form-group">
+                <label>Numéro de carte</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date d'expiration</label>
+                    <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" id="cardCvv" placeholder="123" maxlength="4" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-form" id="walletForm">
+            <h3 style="margin-bottom: 15px; color: #333;">Informations du portefeuille</h3>
+
+            <div class="form-group">
+                <label>Numéro de téléphone</label>
+                <input type="tel" id="walletPhone" placeholder="0612345678" required>
+            </div>
+
+            <div class="form-group">
+                <label>Opérateur</label>
+                <select id="walletOperator" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="maroc-telecom">Maroc Telecom</option>
+                    <option value="orange">Orange Money</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card-form" id="bankForm">
+            <h3 style="margin-bottom: 15px; color: #333;">Virement Bancaire</h3>
+
+            <div style="background: white; padding: 15px; border-radius: 6px; border-left: 4px solid #667eea;">
+                <p style="color: #333; margin-bottom: 10px; font-weight: bold;">📋 Détails du virement:</p>
+                <p style="color: #666; font-size: 13px; margin: 5px 0;">
+                    <strong>IBAN:</strong> MA64 OTHERS 0123 4567 8901 2345
+                </p>
+                <p style="color: #666; font-size: 13px; margin: 5px 0;">
+                    <strong>BIC:</strong> BMCEMAMC
+                </p>
+                <p style="color: #666; font-size: 13px; margin: 5px 0;">
+                    <strong>Bénéficiaire:</strong> OCHO SARL
+                </p>
+                <p style="color: #666; font-size: 13px; margin: 5px 0;">
+                    <strong>Référence:</strong> <span id="bankReference" style="font-family: monospace;">-</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Traitement du paiement...</p>
+        </div>
+
+        <div class="payment-actions" id="paymentActions">
+            <button class="btn btn-pay" id="payButton">Payer maintenant</button>
+            <button class="btn btn-cancel" onclick="goBack()">Annuler</button>
+        </div>
+
+        <div class="security-info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            Transaction sécurisée avec chiffrement SSL
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        let orderId = null;
+        let orderData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Récupérer l'ID de commande depuis l'URL
+            const params = new URLSearchParams(window.location.search);
+            orderId = params.get('orderId');
+
+            if (!orderId) {
+                showError('Erreur: ID de commande manquant');
+                return;
+            }
+
+            // Charger les données de commande
+            loadOrderData();
+            setupPaymentMethodListeners();
+            setupPaymentForm();
+        });
+
+        function loadOrderData() {
+            // Récupérer les données de commande (simulé pour maintenant)
+            // En production, vous feriez un appel API
+            document.getElementById('orderNumber').textContent = `CMD${orderId}`;
+            document.getElementById('itemCount').textContent = '1 article';
+            document.getElementById('subtotal').textContent = '350.00 DH';
+            document.getElementById('shipping').textContent = '0 DH';
+            document.getElementById('totalAmount').textContent = '350.00 DH';
+            document.getElementById('bankReference').textContent = `REF-${orderId}`;
+        }
+
+        function setupPaymentMethodListeners() {
+            const methods = document.querySelectorAll('input[name="paymentMethod"]');
+            methods.forEach(method => {
+                method.addEventListener('change', (e) => {
+                    const selectedMethod = e.target.value;
+                    
+                    // Masquer tous les formulaires
+                    document.getElementById('cardForm').classList.remove('active');
+                    document.getElementById('walletForm').classList.remove('active');
+                    document.getElementById('bankForm').classList.remove('active');
+
+                    // Afficher le formulaire sélectionné
+                    if (selectedMethod === 'card') {
+                        document.getElementById('cardForm').classList.add('active');
+                    } else if (selectedMethod === 'wallet') {
+                        document.getElementById('walletForm').classList.add('active');
+                    } else if (selectedMethod === 'bank') {
+                        document.getElementById('bankForm').classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function setupPaymentForm() {
+            // Formater le numéro de carte
+            const cardNumberInput = document.getElementById('cardNumber');
+            cardNumberInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\s/g, '');
+                let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formatted;
+            });
+
+            // Formater la date d'expiration
+            const expiryInput = document.getElementById('cardExpiry');
+            expiryInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+
+            // CVV - seulement des chiffres
+            const cvvInput = document.getElementById('cardCvv');
+            cvvInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Bouton paiement
+            const payButton = document.getElementById('payButton');
+            payButton.addEventListener('click', processPayment);
+        }
+
+        async function processPayment() {
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            // Validation basée sur la méthode
+            if (!validatePaymentMethod(selectedMethod)) {
+                return;
+            }
+
+            // Afficher le chargement
+            document.getElementById('loadingIndicator').classList.add('active');
+            document.getElementById('paymentActions').style.opacity = '0.5';
+            document.getElementById('paymentActions').style.pointerEvents = 'none';
+
+            try {
+                // Simuler le traitement du paiement
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Appel API pour marquer la commande comme payée
+                const result = await apiRequest(`/commandes/${orderId}/payment`, 'POST', {
+                    paymentMethod: selectedMethod,
+                    status: 'completed',
+                    timestamp: new Date().toISOString()
+                });
+
+                if (result.success) {
+                    // Afficher succès
+                    showPaymentSuccess();
+
+                    // Rediriger vers la confirmation après 3 secondes
+                    setTimeout(() => {
+                        window.location.href = `./order-confirmation.html?orderId=${orderId}`;
+                    }, 3000);
+                } else {
+                    showError(result.message || 'Erreur lors du traitement du paiement');
+                }
+            } catch (error) {
+                showError('Erreur: ' + error.message);
+            } finally {
+                document.getElementById('loadingIndicator').classList.remove('active');
+                document.getElementById('paymentActions').style.opacity = '1';
+                document.getElementById('paymentActions').style.pointerEvents = 'auto';
+            }
+        }
+
+        function validatePaymentMethod(method) {
+            if (method === 'card') {
+                const name = document.getElementById('cardholderName').value.trim();
+                const number = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const expiry = document.getElementById('cardExpiry').value;
+                const cvv = document.getElementById('cardCvv').value;
+
+                if (!name || name.length < 3) {
+                    showError('Entrez un nom de titulaire valide');
+                    return false;
+                }
+                if (number.length !== 16) {
+                    showError('Numéro de carte invalide (16 chiffres)');
+                    return false;
+                }
+                if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                    showError('Date d\'expiration invalide (MM/YY)');
+                    return false;
+                }
+                if (cvv.length < 3 || cvv.length > 4) {
+                    showError('CVV invalide (3 ou 4 chiffres)');
+                    return false;
+                }
+                return true;
+            } else if (method === 'wallet') {
+                const phone = document.getElementById('walletPhone').value.trim();
+                if (!phone || phone.length < 10) {
+                    showError('Entrez un numéro de téléphone valide');
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function showPaymentSuccess() {
+            const container = document.querySelector('.payment-container');
+            container.innerHTML = `
+                <div class="payment-header">
+                    <div class="success-icon">✅</div>
+                    <h1>Paiement Réussi!</h1>
+                    <p>Votre commande a été payée avec succès</p>
+                </div>
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Numéro de commande:</span>
+                        <span>CMD${orderId}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Montant payé:</span>
+                        <span id="paidAmount">350.00 DH</span>
+                    </div>
+                </div>
+                <p style="text-align: center; color: #666; margin: 20px 0;">
+                    Redirection vers la confirmation de commande...
+                </p>
+            `;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => {
+                errorDiv.classList.remove('active');
+            }, 5000);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

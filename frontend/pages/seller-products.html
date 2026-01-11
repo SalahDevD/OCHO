@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Produits - OCHO Vendeur</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .sidebar {
+            background: #333;
+            color: white;
+            width: 250px;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar .logo {
+            padding: 20px;
+            border-bottom: 1px solid #555;
+        }
+
+        .sidebar .logo h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .sidebar .logo p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .sidebar .nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .nav a {
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar .nav a:hover {
+            background: #444;
+            border-left-color: #667eea;
+        }
+
+        .sidebar .nav a.active {
+            background: #667eea;
+            border-left-color: #fff;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .table-container {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .btn-edit {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #45a049;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background: #5568d3;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>OCHO</h1>
+                <p id="userRole">Vendeur</p>
+            </div>
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-item" id="dashboardLink" style="display: none;">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="profile.html" class="nav-item" id="profileLink">
+                    <span>👤</span> Mon Profil
+                </a>
+                <a href="products.html" class="nav-item" id="productsLink" style="display: none;">
+                    <span>📦</span> Produits
+                </a>
+                <a href="seller-dashboard.html" class="nav-item" id="sellerDashboardLink">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="seller-products.html" class="nav-item active" id="sellerProductsLink">
+                    <span>📦</span> Mes Produits
+                </a>
+                <a href="client-shop.html" class="nav-item" id="shopLink">
+                    <span>🛍️</span> Boutique
+                </a>
+                <a href="clients.html" class="nav-item" id="clientsLink" style="display: none;">
+                    <span>👥</span> Clients
+                </a>
+                <a href="commandes.html" class="nav-item" id="commandesLink">
+                    <span>🛒</span> Commandes
+                </a>
+                <a href="users.html" class="nav-item" id="usersLink" style="display: none;">
+                    <span>👤</span> Utilisateurs
+                </a>
+                <a href="#" class="nav-item" onclick="logout(); return false;">
+                    <span>🚪</span> Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h2>Mes Produits</h2>
+                <button class="btn" onclick="openAddModal()">➕ Ajouter un Produit</button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="filterProducts()">
+                <select id="statusFilter" onchange="filterProducts()">
+                    <option value="">Tous les statuts</option>
+                    <option value="true">Actif</option>
+                    <option value="false">Inactif</option>
+                </select>
+            </div>
+
+            <!-- Table Produits -->
+            <div class="table-container">
+                <table id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Nom</th>
+                            <th>Prix Vente</th>
+                            <th>Stock</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Ajout -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Ajouter un Produit</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId" name="productId">
+
+                <div class="form-group">
+                    <label for="reference">Référence *</label>
+                    <input type="text" id="reference" name="reference" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categorie_id">Catégorie *</label>
+                        <select id="categorie_id" name="categorie_id" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="genre">Genre *</label>
+                        <select id="genre" name="genre" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Enfant">Enfant</option>
+                            <option value="Unisexe">Unisexe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prix_achat">Prix Achat *</label>
+                        <input type="number" id="prix_achat" name="prix_achat" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prix_vente">Prix Vente *</label>
+                        <input type="number" id="prix_vente" name="prix_vente" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="saison">Saison</label>
+                        <select id="saison" name="saison">
+                            <option value="Toute saison">Toute saison</option>
+                            <option value="Été">Été</option>
+                            <option value="Hiver">Hiver</option>
+                            <option value="Printemps">Printemps</option>
+                            <option value="Automne">Automne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="marque">Marque</label>
+                        <input type="text" id="marque" name="marque">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" name="stock" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Image du Produit</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <small style="color: #666; display: block; margin-top: 5px;">Format accepté: JPG, PNG, GIF (Max 5MB)</small>
+                    <div id="imagePreview" style="margin-top: 10px; display: none;">
+                        <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Sauvegarder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Édition -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Éditer le Produit</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="edit_productId" name="productId">
+
+                <div class="form-group">
+                    <label for="edit_reference">Référence *</label>
+                    <input type="text" id="edit_reference" name="reference" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_nom">Nom *</label>
+                    <input type="text" id="edit_nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_description">Description</label>
+                    <textarea id="edit_description" name="description"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_categorie_id">Catégorie *</label>
+                        <select id="edit_categorie_id" name="categorie_id" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_genre">Genre *</label>
+                        <select id="edit_genre" name="genre" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Enfant">Enfant</option>
+                            <option value="Unisexe">Unisexe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_prix_achat">Prix Achat *</label>
+                        <input type="number" id="edit_prix_achat" name="prix_achat" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_prix_vente">Prix Vente *</label>
+                        <input type="number" id="edit_prix_vente" name="prix_vente" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_saison">Saison</label>
+                        <select id="edit_saison" name="saison">
+                            <option value="Toute saison">Toute saison</option>
+                            <option value="Été">Été</option>
+                            <option value="Hiver">Hiver</option>
+                            <option value="Printemps">Printemps</option>
+                            <option value="Automne">Automne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_marque">Marque</label>
+                        <input type="text" id="edit_marque" name="marque">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_stock">Stock</label>
+                        <input type="number" id="edit_stock" name="stock" value="0" min="0">
+                    </div>
+                </div>
+
+                <div style="background: #f0f0f0; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 14px;">
+                    <strong>ℹ️ Image actuelle:</strong><br>
+                    <div id="current_image_display" style="margin-top: 10px;">
+                        <!-- Image will be displayed here -->
+                    </div>
+                    <small style="color: #666;">Pour modifier l'image, créez un nouveau produit.</small>
+                </div>
+
+                <div class="form-row">
+                    <button type="submit" class="btn-submit">Sauvegarder les modifications</button>
+                    <button type="button" class="btn-submit" style="background: #999;" onclick="closeEditModal()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/seller-products.js"></script>
+</body>
+
+</html>

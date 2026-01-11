@@ -5,8 +5,11 @@ function isAuthenticated() {
 
 // Sauvegarder le token et les infos utilisateur
 function saveAuth(token, user) {
+    console.log('💾 Saving token:', token ? 'TOKEN_RECEIVED' : 'NO_TOKEN');
+    console.log('💾 Saving user:', user);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+    console.log('✅ Token saved to localStorage:', localStorage.getItem('token') ? 'SUCCESS' : 'FAILED');
 }
 
 // Déconnexion
@@ -30,6 +33,14 @@ function logout() {
 function getUser() {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+}
+
+// Mettre à jour les infos utilisateur
+function setUser(user) {
+    if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+        console.log('✅ User updated in localStorage');
+    }
 }
 
 // Gestion du formulaire de connexion

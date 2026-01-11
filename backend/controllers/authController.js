@@ -5,7 +5,7 @@ const db = require('../config/database');
 // Inscription d'un nouvel utilisateur
 exports.register = async (req, res) => {
     try {
-        const { nom, email, mot_de_passe, role_id } = req.body;
+        const { nom, prenom, email, mot_de_passe, role_id, telephone, adresse, ville, code_postal } = req.body;
 
         // Vérifier si l'email existe déjà
         const [existing] = await db.query('SELECT id FROM Utilisateur WHERE email = ?', [email]);
@@ -17,15 +17,30 @@ exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
 
         // Insérer l'utilisateur
-        const [result] = await db.query(
+        const [userResult] = await db.query(
             'INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id) VALUES (?, ?, ?, ?)',
             [nom, email, hashedPassword, role_id || 3]
         );
 
+        // Si l'utilisateur s'inscrit comme Client (role_id = 3), créer un enregistrement Client
+        const userRoleId = role_id || 3;
+        if (userRoleId === 3) {
+            try {
+                await db.query(
+                    'INSERT INTO Client (nom, prenom, email, telephone, adresse, ville, code_postal) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [nom, prenom || '', email, telephone || '', adresse || '', ville || '', code_postal || '']
+                );
+                console.log('Client record created for:', email);
+            } catch (clientError) {
+                console.error('Erreur création Client:', clientError);
+                // Continue anyway, the Utilisateur record was created
+            }
+        }
+
         res.status(201).json({
             success: true,
             message: 'Utilisateur créé avec succès',
-            userId: result.insertId
+            userId: userResult.insertId
         });
     } catch (error) {
         console.error('Erreur register:', error);

@@ -31,6 +31,7 @@ CREATE TABLE Utilisateur (
     mot_de_passe VARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
     actif BOOLEAN DEFAULT TRUE,
+    avatar LONGTEXT,
     derniere_connexion TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -77,19 +78,22 @@ CREATE TABLE Produit (
     nom VARCHAR(200) NOT NULL,
     description TEXT,
     categorie_id INT NOT NULL,
+    vendeur_id INT,
     genre ENUM('Homme', 'Femme', 'Enfant', 'Unisexe') NOT NULL,
     saison ENUM('Été', 'Hiver', 'Printemps', 'Automne', 'Toute saison') DEFAULT 'Toute saison',
     marque VARCHAR(100),
     prix_achat DECIMAL(10, 2) NOT NULL,
     prix_vente DECIMAL(10, 2) NOT NULL,
     seuil_min INT DEFAULT 10,
-    image_url VARCHAR(255),
+    image_url LONGTEXT,
     actif BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (categorie_id) REFERENCES Categorie(id) ON DELETE RESTRICT,
+    FOREIGN KEY (vendeur_id) REFERENCES Utilisateur(id) ON DELETE SET NULL,
     INDEX idx_produit_reference (reference),
     INDEX idx_produit_categorie (categorie_id),
+    INDEX idx_produit_vendeur (vendeur_id),
     INDEX idx_produit_genre (genre),
     INDEX idx_produit_actif (actif),
     INDEX idx_produit_nom (nom)
@@ -385,14 +389,18 @@ INSERT INTO Role (nom, description) VALUES
 ('Administrateur', 'Accès complet au système'),
 ('Magasinier', 'Gestion du stock et des entrées/sorties'),
 ('Employé', 'Consultation et enregistrement des ventes'),
-('Client', 'Consultation catalogue et passage de commandes');
+('Client', 'Consultation catalogue et passage de commandes'),
+('Vendeur', 'Gestion de ses produits et suivi des ventes');
 
 -- Insertion Utilisateurs (mot de passe: Admin@123)
 -- Hash bcrypt pour "Admin@123": $2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC
 INSERT INTO Utilisateur (nom, email, mot_de_passe, role_id) VALUES 
 ('Administrateur OCHO', 'admin@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 1),
 ('Mohammed Alaoui', 'alaoui@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 2),
-('Fatima Zahra', 'fzahra@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 3);
+('Fatima Zahra', 'fzahra@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 3),
+('Ahmed Seller', 'ahmed.seller@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 5),
+('Layla Boutique', 'layla.boutique@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 5),
+('Client Test', 'client@ocho.ma', '$2b$10$rQZJKe1Y3VZ8EaVVxRxBY.kYqVrJKF.xPJxLH1RXxI3nA7ZYQhKLC', 4);
 
 -- Insertion Catégories
 INSERT INTO Categorie (nom, description, actif) VALUES 

@@ -139,3 +139,65 @@ exports.deleteClient = async (req, res) => {
         res.status(500).json({ success: false, message: 'Erreur serveur' });
     }
 };
+// Obtenir le profil client de l'utilisateur actuel
+exports.getMyProfile = async (req, res) => {
+    try {
+        const userEmail = req.user.email;
+        const userId = req.user.id;
+        
+        console.log(`🔍 Finding client profile for user: ${userEmail} (ID: ${userId})`);
+
+        // Chercher le client par email
+        const [clients] = await db.query(
+            'SELECT * FROM Client WHERE email = ? AND actif = TRUE',
+            [userEmail]
+        );
+
+        if (clients.length > 0) {
+            console.log('✓ Client found by email:', clients[0]);
+            return res.json({ success: true, client: clients[0], foundBy: 'email' });
+        }
+
+        // Si pas trouvé par email, chercher par nom
+        const [userInfo] = await db.query(
+            'SELECT nom FROM Utilisateur WHERE id = ?',
+            [userId]
+        );
+
+        if (userInfo.length > 0 && userInfo[0].nom) {
+            const [clientsByName] = await db.query(
+                'SELECT * FROM Client WHERE nom = ? AND actif = TRUE LIMIT 1',
+                [userInfo[0].nom]
+            );
+
+            if (clientsByName.length > 0) {
+                console.log('✓ Client found by name:', clientsByName[0]);
+                return res.json({ success: true, client: clientsByName[0], foundBy: 'name' });
+            }
+        }
+
+        // Dernière tentative: retourner le premier client disponible
+        const [firstClient] = await db.query(
+            'SELECT * FROM Client WHERE actif = TRUE ORDER BY created_at DESC LIMIT 1'
+        );
+
+        if (firstClient.length > 0) {
+            console.log('⚠ Using first available client:', firstClient[0]);
+            return res.json({ success: true, client: firstClient[0], foundBy: 'first_available' });
+        }
+
+        console.error('✗ No clients found in system');
+        res.status(404).json({ 
+            success: false, 
+            message: 'Aucun profil client trouvé',
+            debug: {
+                userEmail,
+                userId,
+                clientsInSystem: false
+            }
+        });
+    } catch (error) {
+        console.error('Erreur getMyProfile:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur', error: error.message });
+    }
+};

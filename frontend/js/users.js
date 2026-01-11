@@ -6,6 +6,9 @@ if (!isAuthenticated()) {
 const user = getUser();
 document.getElementById('userRole').textContent = user.role;
 
+// Load navigation based on role
+loadNavigation(user.role);
+
 // Vérifier que l'utilisateur est admin
 if (user.role !== 'Administrateur') {
     alert('Accès refusé. Seuls les administrateurs peuvent accéder à cette page.');

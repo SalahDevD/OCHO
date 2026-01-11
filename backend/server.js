@@ -6,9 +6,37 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const corsOptions = {
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // Also allow localhost and 127.0.0.1 in development
+        const allowedOrigins = [
+            'http://localhost:5000',
+            'http://127.0.0.1:5000',
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+            undefined // Allow requests without origin header
+        ];
+        
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log('⚠️ CORS request from origin:', origin);
+            // In development, allow all origins; in production, be strict
+            if (process.env.NODE_ENV === 'production') {
+                callback(new Error('CORS policy violation'), false);
+            } else {
+                callback(null, true); // Allow in development
+            }
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Servir les fichiers statiques du frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
